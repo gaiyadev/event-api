@@ -5,8 +5,6 @@ var logger = require('morgan');
 const {buildSchema } = require('graphql');
 const {graphqlHTTP} = require('express-graphql');
 
-// var indexRouter = require('./routes/index');
-// var usersRouter = require('./routes/users');
 
 var app = express();
 
@@ -16,36 +14,67 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/graphql', graphqlHTTP({
-    schema: buildSchema(`
-    type RootQuery {
-        events: [String!]!
-    }
 
-    type RootMutation {
-        createEvent(name: String): String
-    }
+const events = [];
+ 
+app.use(
+    '/graphql', graphqlHTTP({
+      schema: buildSchema(`
+      type Event {
+          _id: ID!
+          title: String!
+          description: String!
+          price: Float!
+          date: String!
+      }
 
-    schema {
-            query: RootQuery
-            mutation: RootMutation
+      input EventInput {
+        title: String!
+        description: String!
+        price: Float!
+        date: String!
+      }
+
+        type RootQuery {
+            events: [Event!]!
         }
-    `),
-    graphiql: true,
-    rootValue:{
-        events: ()=> {
-            return ['romance', 'war', 'love'];
+
+        type RootMutation {
+            createEvent(eventInput: EventInput): Event
         }
-    },
-    createEvent: (args) => {
-        const eventName = args.name; 
-        return eventName;
-    }
-},
+            schema {
+                query: RootQuery
+                mutation: RootMutation
+            }
+      `),
 
-));
+      rootValue:{
+        events: () => {
+            return events;
+        },
+        createEvent: (args)=> {
+            console.log(args)
 
-// app.use('/', indexRouter);
-// app.use('/users', usersRouter);
+            const event = {
+                _id: Math.random().toString(),
+                title: args.eventInput.title,
+                description: args.eventInput.description,
+                price: +args.eventInput.price,
+                date: args.eventInput.date
+            }
+            events.push(event);
+            return event;
+
+            // const eventName = args.name;
+            // return eventName;
+
+        }
+      },
+      graphiql: true,
+    }),
+  );
+
+
+
 
 module.exports = app;
