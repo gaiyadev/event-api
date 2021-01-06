@@ -4,7 +4,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const {buildSchema } = require('graphql');
 const {graphqlHTTP} = require('express-graphql');
-
+const consola = require('consola')
+require('dotenv').config()
+const Event =require('./models/event')
 
 var app = express();
 
@@ -53,21 +55,22 @@ app.use(
             return events;
         },
         createEvent: (args)=> {
-            console.log(args)
+            consola.success('event added successfully')
 
-            const event = {
-                _id: Math.random().toString(),
+            const event = new Event({
                 title: args.eventInput.title,
                 description: args.eventInput.description,
                 price: +args.eventInput.price,
-                date: args.eventInput.date
-            }
-            events.push(event);
-            return event;
+                date: new Date(args.eventInput.date)
+          });
 
-            // const eventName = args.name;
-            // return eventName;
-
+       Event.newEvent(event, (err, user) => {
+            if (err) return err; 
+               events.push(event);
+               consola.success(user);
+               // return {...user.doc};     
+             });
+            return event;     
         }
       },
       graphiql: true,
