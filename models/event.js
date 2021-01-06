@@ -14,13 +14,16 @@ const EventSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    creator: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref:'User'
+    },
     date: {
         type: Date,
         required: true,
     }
 });
 
-// const Event = mongoose.model('Event', EventSchema);
 module.exports = mongoose.model('Event', EventSchema);;
 
 //FUNCTION TO CREATE
