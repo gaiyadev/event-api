@@ -7,7 +7,8 @@ const {graphqlHTTP} = require('express-graphql');
 const consola = require('consola')
 require('dotenv').config()
 const Event =require('./models/event')
-const User = require('./models/user')
+const User = require('./models/user');
+const bcrypt = require('bcrypt');
 
 var app = express();
 
@@ -19,7 +20,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 const events = [];
- let createdUser;
+
+
 app.use(
     '/graphql', graphqlHTTP({
       schema: buildSchema(`
@@ -78,11 +80,12 @@ app.use(
 
         // creating new event
         createEvent: (args)=> {
+          const { title, description, date, price } = args.eventInput;
           const event = new Event({
-            title: args.eventInput.title,
-            description: args.eventInput.description,
-            price: +args.eventInput.price, 
-            date: new Date(args.eventInput.date),
+            title: title,
+            description: description,
+            price: +price, 
+            date: new Date(date),
             creator: '5ff59359fc93c140fa28de47'
           }); 
 
@@ -94,27 +97,32 @@ app.use(
             return event;     
         },
         // create User
-        createUser: args => {
-         User.getUserByEmail ( args.userInput.email, (err, isUser) => {
-            if (err) throw err;
-            if (isUser) {
-                  consola.error('User  already exist')  
-               throw new Error('User  already exist')
-            }else {
-              const user = new User({
-                email: args.userInput.email,
-                password: args.userInput.password,
+        createUser:args => {
+          const { email } = args.userInput;
+       return User.findOne({ email:email }).then(user => {
+            if (user) {
+              throw new Error('User already exist.');
+            } else {
+              return bcrypt.hash(args.userInput.password, 12).then(hashedPassword=> {
+                const newUser = new User({
+                  email: args.userInput.email,
+                  password: hashedPassword,
               }); 
-    
-              User.newUser(user, (err, user) => {   
-                if (err) return err; 
-                createdUser = user;
+              return  newUser.save();
+                })
+                .then(result=> {
+                  consola.success('User added successfully');
+                return {...result._doc, password: null };
+              })
+              .catch(err => {
+                throw err;
               });
             }
-          })       
-          return createdUser;
-
-        }
+          }).catch(err=> {
+            throw err;
+          });
+    
+          }
       },
       graphiql: true,
     }),
