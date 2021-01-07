@@ -1,30 +1,29 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-const {buildSchema } = require('graphql');
-const {graphqlHTTP} = require('express-graphql');
-const consola = require('consola')
-require('dotenv').config()
-const Event =require('./models/event')
-const User = require('./models/user');
-const bcrypt = require('bcrypt');
+var express = require("express");
+var path = require("path");
+var cookieParser = require("cookie-parser");
+var logger = require("morgan");
+const { buildSchema } = require("graphql");
+const { graphqlHTTP } = require("express-graphql");
+const consola = require("consola");
+require("dotenv").config();
+const Event = require("./models/event");
+const User = require("./models/user");
+const bcrypt = require("bcrypt");
 
 var app = express();
 
-app.use(logger('dev'));
+app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(express.static(path.join(__dirname, "public")));
 
 const events = [];
 
-
 app.use(
-    '/graphql', graphqlHTTP({
-      schema: buildSchema(`
+  "/graphql",
+  graphqlHTTP({
+    schema: buildSchema(`
       type Event {
           _id: ID!
           title: String!
@@ -65,70 +64,71 @@ app.use(
             }
       `),
 
-      rootValue:{
-        // Fetching all events
-        events: () => {
-         return  Event.find().then(events=> {
-              return  events.map(event => {
-                return {...event._doc }
-              });
-            }).catch(err => {
-              consola.error(new Error(err));
-
+    rootValue: {
+      // Fetching all events
+      events: () => {
+        return Event.find()
+          .then((events) => {
+            return events.map((event) => {
+              return { ...event._doc, _id: event.id  };
             });
-        },
+          })
+          .catch((err) => {
+            consola.error(new Error(err));
+          });
+      },
 
-        // creating new event
-        createEvent: (args)=> {
-          const { title, description, date, price } = args.eventInput;
-          const event = new Event({
-            title: title,
-            description: description,
-            price: +price, 
-            date: new Date(date),
-            creator: '5ff59359fc93c140fa28de47'
-          }); 
+      // creating new event
+      createEvent: (args) => {
+        const { title, description, date, price } = args.eventInput;
+        const event = new Event({
+          title: title,
+          description: description,
+          price: +price,
+          date: new Date(date),
+          creator: "5ff59359fc93c140fa28de47",
+        });
 
-           Event.newEvent(event, (err) => {   
-            if (err) return err; 
-            consola.success('event added successfully');
-               events.push(event);
-             }); 
-            return event;     
-        },
-        // create User
-        createUser:args => {
-          const { email } = args.userInput;
-       return User.findOne({ email:email }).then(user => {
+        Event.newEvent(event, (err) => {
+          if (err) return err;
+          consola.success("event added successfully");
+          events.push(event);
+        });
+        return event;
+      },
+      // create User
+      createUser: (args) => {
+        const { email, password } = args.userInput;
+        return User.findOne({ email: email })
+          .then((user) => {
             if (user) {
-              throw new Error('User already exist.');
+              throw new Error("User already exist.");
             } else {
-              return bcrypt.hash(args.userInput.password, 12).then(hashedPassword=> {
-                const newUser = new User({
-                  email: args.userInput.email,
-                  password: hashedPassword,
-              }); 
-              return  newUser.save();
+              return bcrypt
+                .hash(password, 12)
+                .then((hashedPassword) => {
+                  const newUser = new User({
+                    email: email,
+                    password: hashedPassword,
+                  });
+                  return newUser.save();
                 })
-                .then(result=> {
-                  consola.success('User added successfully');
-                return {...result._doc, password: null };
-              })
-              .catch(err => {
-                throw err;
-              });
+                .then((result) => {
+                  consola.success("User added successfully");
+                  return { ...result._doc, password: null };
+                })
+                .catch((err) => {
+                  throw err;
+                });
             }
-          }).catch(err=> {
+          })
+          .catch((err) => {
             throw err;
           });
-    
-          }
       },
-      graphiql: true,
-    }),
-  );
-
-
-
+    },
+    graphiql: true,
+  })
+);
 
 module.exports = app;
