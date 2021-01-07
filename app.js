@@ -10,8 +10,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-const  graphQlSchema = require('./graphql/schema/index')
-const graphQLResolvers = require('./graphql/resolvers/index')
+const graphQlSchema = require("./graphql/schema/index");
+const graphQLResolvers = require("./graphql/resolvers/index");
 
 app.use(
   "/graphql",
@@ -23,4 +23,3 @@ app.use(
 );
 
 module.exports = app;
-
