@@ -88,13 +88,18 @@ app.use(
           date: new Date(date),
           creator: "5ff59359fc93c140fa28de47",
         });
-
-        Event.newEvent(event, (err) => {
-          if (err) return err;
-          consola.success("event added successfully");
-          events.push(event);
-        });
-        return event;
+          event.save().then(result=> {
+            consola.success("event added successfully");
+            return {...result};
+          }).catch(err=> {
+            throw err;
+          });
+        // Event.newEvent(event, (err) => {
+        //   if (err) return err;
+        //   consola.success("event added successfully");
+        //   events.push(event); 
+        // });
+        // return event;
       },
       // create User
       createUser: (args) => {
