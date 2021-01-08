@@ -3,6 +3,8 @@ const User = require("../../models/user");
 const Booking = require("../../models/booking");
 const bcrypt = require("bcrypt");
 const consola = require("consola");
+const { TypeMetaFieldDef } = require("graphql");
+const e = require("express");
 
 const events = (eventIds) => {
   return Event.find({ _id: { $in: eventIds } })
@@ -33,6 +35,20 @@ const user = (userId) => {
       throw err;
     });
 };
+
+const singleEvent = async eventId => {
+    try {
+      const event =  Event.findOne({_id: eventId});
+      return {
+          ...event._doc,
+         _id: event.id,
+         creator: user.bind(this, event.creator)
+    };
+    } catch (err) {
+        throw err;
+    }
+}
+
 
 module.exports = {
   // Fetching all events
@@ -126,10 +142,12 @@ module.exports = {
 
       return bookings.map((booking) => {
         return {
-          ...this.booking._doc,
+          ...booking._doc,
           _id: booking.id,
           createdAt: new Date(booking._doc.createdAt).toISOString(),
           updatedAt: new Date(booking._doc.updatedAt).toISOString(),
+          user: user.bind(this, booking._doc.user),
+          event: singleEvent.bind(this, booking._doc.event)
         };
       });
     } catch (err) {
@@ -145,9 +163,26 @@ module.exports = {
     const result = await booking.save();
     return {
         ...result._doc, 
-        id: result.id,
+        _id: result.id,
+        user: user.bind(this, result._doc.user),
+        event: singleEvent.bind(this, result._doc.event),
         createdAt: new Date(result._doc.createdAt).toISOString(),
         updatedAt: new Date(result._doc.updatedAt).toISOString(),
     }
   },
+  cancelBooking: async args => {
+        try {
+          const booking = await Booking.findById(args.bookingId).populate('event');
+
+          const event = {
+            ...booking.event._doc, 
+            _id: booking.event.id, 
+            creator: user.bind(this, booking.event._doc.creator)
+          }; 
+          await Booking.deleteOne({_id: args.bookingId});
+          return event;
+        } catch (err) {
+          throw err;
+        }
+  }
 };
