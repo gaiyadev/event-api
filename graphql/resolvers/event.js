@@ -28,7 +28,7 @@ module.exports = {
       description: description,
       price: +price,
       date: new Date(date),
-      creator: "600015b97e666a1224dfe08c",
+      creator: req.userId,
     });
     let createdEvent;
     return event
@@ -36,7 +36,7 @@ module.exports = {
       .then((result) => {
         createdEvent = transformedEvent(result);
         consola.success("event added successfully");
-        return User.findById("600015b97e666a1224dfe08c");
+        return User.findById(req.userId);
       })
       .then((user) => {
         if (!user) {

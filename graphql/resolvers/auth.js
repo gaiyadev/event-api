@@ -47,6 +47,11 @@ module.exports = {
       process.env.JWT_SECRET,
       {expiresIn: '1h'}
     );
-    return { userId: user.id, token, token, email: user.email, tokenExpired: 1 };
+    return {
+       userId: user.id,
+       token, token, 
+       email: user.email, 
+       tokenExpired: 1 
+      };
   },
 };
