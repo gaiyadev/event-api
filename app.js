@@ -12,7 +12,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 const graphQlSchema = require("./graphql/schema/index");
 const graphQLResolvers = require("./graphql/resolvers/index");
+const isAuth = require('./middleware/isAuth')
 
+
+app.use(isAuth)
 app.use(
   "/graphql",
   graphqlHTTP({
