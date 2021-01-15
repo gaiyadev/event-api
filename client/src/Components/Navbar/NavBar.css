@@ -1,0 +1,48 @@
+.main-navigation_logo h1 {
+  margin: 13px;
+  font-size: 1.5rem;
+  color: #fff;
+  align-items: center;
+}
+
+.main-navigation_item {
+  margin-left: 1.5rem;
+}
+
+.main-navigation {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 3.5rem;
+  width: 100%;
+  background-color: rgb(36, 96, 187);
+  display: flex;
+  padding: 0 1rem;
+}
+
+body {
+  margin: 0px;
+  padding: 0px;
+}
+
+.main-navigation_item ul {
+  display: flex;
+  padding: 0px;
+  list-style: none;
+  float: right;
+}
+
+.main-navigation_item ul li {
+  margin: 0 1rem;
+}
+.main-navigation_item ul li a {
+  text-decoration: none;
+  color: #fff;
+}
+
+.main-navigation_item ul li a:hover,
+.main-navigation_item ul li a:active .main-navigation_item ul li a.active {
+  text-decoration: none;
+  color: #fff;
+  opacity: 0.7;
+}

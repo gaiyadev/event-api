@@ -1,23 +1,24 @@
 import "./App.css";
-import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
-
-import { Button } from "antd";
-import { DownloadOutlined } from "@ant-design/icons";
+import {BrowserRouter, Route,Redirect, Switch} from 'react-router-dom'
+import Auth  from './pages/Auth/Auth'
+import Events from './pages/Events/Events'
+import Bookings from './pages/Booking/Bookings'
+import NavBar from './Components/Navbar/NavBar'
 
 function App() {
-  return (
-    <div className="App">
-      <Button type="primary" ghost>
-        Primary
-      </Button>
-      <Button ghost>Default</Button>
-      <Button type="dashed" ghost>
-        Dashed
-      </Button>
-      <Button type="primary" icon={<DownloadOutlined />} />
-      <Button type="danger" shape="circle" icon={<DownloadOutlined />} />
-      <Button type="success" shape="round" icon={<DownloadOutlined />} />
-    </div>
+  return (    
+    <BrowserRouter>
+    <NavBar/>
+     <main className="main-content">
+      <Switch>
+          <Redirect from="/" to="/auth" exact/>
+          <Route path="/" component={Auth}  exact/>
+          <Route path="/auth" component={Auth} exact />
+          <Route path="/events" component={Events} exact />
+          <Route path="/bookings" component={Bookings} exact />
+        </Switch>
+      </main>
+    </BrowserRouter>
   );
 }
 
