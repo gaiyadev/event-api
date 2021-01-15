@@ -147,7 +147,9 @@ export default class Events extends Component {
   };
   render() {
     const eventList = this.state.events.map(event=> {
-      return <li key={event._id} className="event_list_item">{event.title}</li>
+      return (
+      <li key={event._id} className="event_list_item">{event.title}</li>
+      )
 
     })
 
