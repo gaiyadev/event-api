@@ -1,0 +1,46 @@
+.modal_content {
+    padding: 1rem;
+}
+
+.model_action {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem;
+}
+.btn_cancel {
+    background-color: red;
+    color: #ffffff;
+    padding: 5px 10px;
+    box-sizing: border-box;
+    margin: 4px;
+}
+.btn_comfirm {
+    background-color: navy;
+    color: #ffffff;
+    padding: 10px;
+}
+
+.model {
+  width: 90%;
+  background-color: grey;
+  position: fixed;
+  top: 20vh;
+  left: 5%;
+}
+
+@media (min-width: 768px) {
+  .model {
+    width: 50rem;
+    left: calc((100% - 50rem) / 2);
+  }
+}
+
+.model_header {
+    padding: 1rem;
+    color: #ffffff;
+    background-color: green;
+}
+
+.model_header h1{
+   color: #ffffff;
+}

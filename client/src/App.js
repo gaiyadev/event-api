@@ -45,6 +45,9 @@ export default class App extends Component {
               {!this.state.token && <Redirect from="/" to="/auth" exact />}
               {this.state.token && <Redirect from="/" to="/events" exact />}
               {this.state.token && <Redirect from="/auth" to="/events" exact />}
+              {!this.state.token && (
+                <Redirect from="/bookings" to="/auth" exact />
+              )}
 
               <Route path="/" component={Auth} exact />
               {!this.state.token && (

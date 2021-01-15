@@ -46,3 +46,13 @@ body {
   color: #fff;
   opacity: 0.7;
 }
+
+.btn {
+  color: #fff;
+  background-color: red;
+  padding: 6px;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+  cursor: pointer;
+}
