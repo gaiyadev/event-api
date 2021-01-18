@@ -3,11 +3,14 @@ import React, { Component } from "react";
 import Modal from "../../Components/Model/Model";
 import authContext from "../../context/auth-context";
 import EventList from "../../Components/Events/EventList/EventList";
-
+import Spinner from "../../Components/Spinner/Spinner";
+import eventList from "../../Components/Events/EventList/EventList";
 export default class Events extends Component {
   state = {
     creating: false,
     events: [],
+    isLoading: false,
+    selectedEvent: null,
   };
 
   constructor(props) {
@@ -89,8 +92,24 @@ export default class Events extends Component {
         }
         return res.json();
       })
-      .then(() => {
-        this.fetchEvent();
+      .then((resData) => {
+        // this.fetchEvent();
+        this.setState((prevstate) => {
+          const updatedEvent = [...prevstate.events];
+          updatedEvent.push({
+            _id: resData.data.createEvent._id,
+            title: resData.data.createEvent.title,
+            description: resData.data.createEvent.description,
+            date: resData.data.createEvent.date,
+            price: resData.data.createEvent.price,
+            creator: {
+              _id: this.context.userId,
+            },
+          });
+          return {
+            events: updatedEvent,
+          };
+        });
       })
       .catch((err) => console.log(err));
 
@@ -100,6 +119,7 @@ export default class Events extends Component {
   };
 
   fetchEvent() {
+    this.setState({ isLoading: true });
     const token = this.context.token;
     const headers = {
       "Content-Type": "application/json",
@@ -135,9 +155,12 @@ export default class Events extends Component {
       })
       .then((result) => {
         const event = result.data.events;
-        this.setState({ events: event });
+        this.setState({ events: event, isLoading: false });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isLoading: false });
+      });
   }
 
   componentDidMount() {
@@ -147,8 +170,20 @@ export default class Events extends Component {
   modelCancelHandler = () => {
     this.setState({
       creating: false,
+      selectedEvent: null,
     });
   };
+
+  showDetailHandler = (eventId) => {
+    this.setState((prevstate) => {
+      const selectedEvent = prevstate.events.find((e) => e._id === eventId);
+      return { selectedEvent: selectedEvent };
+    });
+  };
+  bookEventHandler = () => {
+    console.log("Bok");
+  };
+
   render() {
     // const eventList = this.state.events.map((event) => {
     //   return (
@@ -218,6 +253,20 @@ export default class Events extends Component {
             </form>
           </Modal>
         )}
+        {this.selectedEvent && (
+          <Modal
+            title={this.state.selectedEvent.title}
+            canCancel
+            canConfirm
+            onCancel={this.modelCancelHandler}
+            onConfirm={this.bookEventHandler}
+          >
+            <h1>{this.state.selectedEvent.title}</h1>
+            <h2> {this.state.selectedEvent.price} </h2>
+            <h2> {this.state.selectedEvent.date} </h2>
+            <p> {this.state.selectedEvent.description} </p>
+          </Modal>
+        )}
         {this.context.token && (
           <div className="event_ctl">
             <h2>Share Your Event</h2>
@@ -230,12 +279,15 @@ export default class Events extends Component {
           </div>
         )}
         <br /> <br />
-        {/* jjjj */}
-        <EventList
-          events={this.state.events}
-          authUserId={this.context.userId}
-        />
-        {/* <ul className="events_list">{eventList}</ul> */}
+        {this.state.isLoading ? (
+          <Spinner />
+        ) : (
+          <EventList
+            events={this.state.events}
+            authUserId={this.context.userId}
+            onViewDetail={this.showDetailHandler}
+          />
+        )}
       </React.Fragment>
     );
   }
