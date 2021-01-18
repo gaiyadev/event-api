@@ -1,0 +1,16 @@
+GET https://jsonplaceholder.typicode.com/posts
+
+###
+
+POST https://jsonplaceholder.typicode.com/posts
+content-type: application/json
+
+{
+    "title": "sample",
+    "body": "Wed, 21 Oct 2015 18:27:50 GMT"
+}
+###
+
+GET https://jsonplaceholder.typicode.com/posts/1
+
+

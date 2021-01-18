@@ -1,11 +1,11 @@
-const authResolver = require('./auth');
-const bookingResolver = require('./booking');
-const eventResolver = require('./event');
+const authResolver = require("./auth");
+const bookingResolver = require("./booking");
+const eventResolver = require("./event");
 
 const rootResolver = {
   ...authResolver,
   ...bookingResolver,
-  ...eventResolver
-}
+  ...eventResolver,
+};
 
 module.exports = rootResolver;

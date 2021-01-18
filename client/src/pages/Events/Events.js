@@ -1,12 +1,13 @@
 import React, { Component } from "react";
-import "../../pages/Events/Event.css";
+// import "../../pages/Events/Event.css";
 import Modal from "../../Components/Model/Model";
 import authContext from "../../context/auth-context";
+import EventList from "../../Components/Events/EventList/EventList";
 
 export default class Events extends Component {
   state = {
     creating: false,
-    events: []
+    events: [],
   };
 
   constructor(props) {
@@ -32,7 +33,7 @@ export default class Events extends Component {
     const description = this.descriptionEL.current.value;
 
     if (
-      title.trim().length == 0 ||
+      title.trim().length === 0 ||
       price.trim().length === 0 ||
       date.trim().length === 0 ||
       description.trim().length === 0
@@ -89,7 +90,7 @@ export default class Events extends Component {
         return res.json();
       })
       .then(() => {
-        this.fetchEvent()
+        this.fetchEvent();
       })
       .catch((err) => console.log(err));
 
@@ -113,6 +114,9 @@ export default class Events extends Component {
             date
             price
             description
+            creator{
+              _id
+            }
           }
         }       
         `,
@@ -131,7 +135,7 @@ export default class Events extends Component {
       })
       .then((result) => {
         const event = result.data.events;
-        this.setState({events: event})
+        this.setState({ events: event });
       })
       .catch((err) => console.log(err));
   }
@@ -146,12 +150,13 @@ export default class Events extends Component {
     });
   };
   render() {
-    const eventList = this.state.events.map(event=> {
-      return (
-      <li key={event._id} className="event_list_item">{event.title}</li>
-      )
-
-    })
+    // const eventList = this.state.events.map((event) => {
+    //   return (
+    //     <li key={event._id} className="event_list_item">
+    //       {event.title}
+    //     </li>
+    //   );
+    // });
 
     return (
       <React.Fragment>
@@ -225,9 +230,12 @@ export default class Events extends Component {
           </div>
         )}
         <br /> <br />
-        <ul className="events_list">
-         {eventList}
-        </ul>
+        {/* jjjj */}
+        <EventList
+          events={this.state.events}
+          authUserId={this.context.userId}
+        />
+        {/* <ul className="events_list">{eventList}</ul> */}
       </React.Fragment>
     );
   }
