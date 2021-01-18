@@ -4,6 +4,7 @@ import Modal from "../../Components/Model/Model";
 import authContext from "../../context/auth-context";
 import EventList from "../../Components/Events/EventList/EventList";
 import Spinner from "../../Components/Spinner/Spinner";
+import { concatAST } from "graphql";
 import eventList from "../../Components/Events/EventList/EventList";
 export default class Events extends Component {
   state = {
@@ -165,6 +166,7 @@ export default class Events extends Component {
 
   componentDidMount() {
     this.fetchEvent();
+    this.showDetailHandler();
   }
 
   modelCancelHandler = () => {
@@ -175,24 +177,18 @@ export default class Events extends Component {
   };
 
   showDetailHandler = (eventId) => {
-    this.setState((prevstate) => {
-      const selectedEvent = prevstate.events.find((e) => e._id === eventId);
-      return { selectedEvent: selectedEvent };
+    this.setState((prevState) => {
+      const selectedEvent = prevState.events.find((e) => e._id === eventId);
+      console.log(selectedEvent);
+       return { selectedEvent: selectedEvent };
     });
   };
+
   bookEventHandler = () => {
     console.log("Bok");
   };
 
   render() {
-    // const eventList = this.state.events.map((event) => {
-    //   return (
-    //     <li key={event._id} className="event_list_item">
-    //       {event.title}
-    //     </li>
-    //   );
-    // });
-
     return (
       <React.Fragment>
         {this.state.creating && (
