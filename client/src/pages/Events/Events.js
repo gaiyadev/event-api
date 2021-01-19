@@ -180,7 +180,7 @@ export default class Events extends Component {
     this.setState((prevState) => {
       const selectedEvent = prevState.events.find((e) => e._id === eventId);
       console.log(selectedEvent);
-       return { selectedEvent: selectedEvent };
+      return { selectedEvent: selectedEvent };
     });
   };
 
